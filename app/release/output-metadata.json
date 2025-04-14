@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "app.netsrv.dataanalysis",
+  "applicationId": "app.netsrv.kalilinux",
   "variantName": "release",
   "elements": [
     {

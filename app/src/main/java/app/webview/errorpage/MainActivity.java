@@ -1,68 +1,62 @@
 package app.webview.errorpage;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.view.View;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-
+import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-
-import app.webview.errorpage.databinding.ActivityMainBinding;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
+import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ActivityMainBinding binding;
-    private String url = "https://julisunkan.github.io/front/index.html";
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle toggle;
+    private ListView listView;
+    private String[] items = {"Item 1", "Item 2", "Item 3", "Item 4"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView(R.layout.activity_main);
 
-        initViews();
-    }
+        // Toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-    private void initViews() {
-        binding.webView.loadUrl(url);
-        binding.webView.getSettings().setJavaScriptEnabled(true);
-        binding.webView.setWebViewClient(new MyWebViewClient());
-        binding.webView.canGoBack();
-        binding.webView.canGoForward();
+        // Drawer
+        drawerLayout = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
 
-        binding.ivReload.setOnClickListener(new View.OnClickListener() {
+        // Drawer Toggle (hamburger icon)
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        // ListView
+        listView = findViewById(R.id.listView);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, items);
+        listView.setAdapter(adapter);
+
+        // Navigation item click
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void onClick(View view) {
-                initViews();
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        // Handle Home click
+                        return true;
+                    case R.id.nav_settings:
+                        // Handle Settings click
+                        return true;
+                }
+                return false;
             }
         });
-    }
-
-    private class MyWebViewClient extends WebViewClient {
-
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            view.loadUrl(url);
-            return super.shouldOverrideUrlLoading(view, url);
-        }
-
-        @Override
-        public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            super.onPageStarted(view, url, favicon);
-            binding.pbLoad.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        public void onPageFinished(WebView view, String url) {
-            super.onPageFinished(view, url);
-            binding.pbLoad.setVisibility(View.GONE);
-        }
-
-        @Override
-        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-            view.loadUrl("file:///android_asset/index.html");
-            super.onReceivedError(view, errorCode, description, failingUrl);
-        }
     }
 }
